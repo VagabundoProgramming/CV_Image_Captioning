@@ -189,9 +189,24 @@ def process_input(img_path, captions, vectorization):
     Returns:
         The processed image and captions
     """
+    
 
     return decode_and_resize(img_path), vectorization(captions)
 
+
+def make_datasetpre(images, captions, vectorization):
+    """ Given a set of images and captions build a dataset
+    Args:
+        A list of images and a list of captions of same lenght
+    Returns:
+        The dataset of the provided images and captions
+    """
+
+    dataset = tf.data.Dataset.from_tensor_slices((images, captions))
+    dataset = dataset.shuffle(BATCH_SIZE * 8)
+    dataset = dataset.map(process_input, num_parallel_calls=AUTOTUNE)
+    dataset = dataset.batch(BATCH_SIZE).prefetch(AUTOTUNE)
+    return dataset
 
 def make_dataset(images, captions, vectorization):
     """ Given a set of images and captions build a dataset
@@ -203,7 +218,7 @@ def make_dataset(images, captions, vectorization):
 
     dataset = tf.data.Dataset.from_tensor_slices((images, captions))
     dataset = dataset.shuffle(BATCH_SIZE * 8)
-    dataset = dataset.map(process_input(vectorization = vectorization), num_parallel_calls=AUTOTUNE)
+    dataset = dataset.map((lambda x, y: process_input(x, y, vectorization)), num_parallel_calls=AUTOTUNE)
     dataset = dataset.batch(BATCH_SIZE).prefetch(AUTOTUNE)
     return dataset
 
