@@ -58,8 +58,9 @@ vectorization = get_vectorization(text_data)
 image_augmentation = get_image_aug()
 
 train_dataset = make_dataset(list(train_data.keys()), list(train_data.values()), vectorization)
-test_dataset = make_dataset(list(test_data.keys()), list(test_data.values()))
-valid_dataset = make_dataset(list(valid_data.keys()), list(valid_data.values()))
+test_dataset = make_dataset(list(test_data.keys()), list(test_data.values()), vectorization)
+valid_dataset = make_dataset(list(valid_data.keys()), list(valid_data.values()), vectorization)
+
 
 
     ### Create the model ###
