@@ -1,6 +1,7 @@
 # This file contains the code needed to visualize 
 # and evaluate the model
 
+import evaluate
 import re
 import tensorflow as tf
 import matplotlib.pyplot as plt
@@ -68,12 +69,36 @@ def display_random_caption(model, data, vectorization):
 
 ### Metrics ###
 
-def metrics(model, data, bleu, rouge, meteor):
+def load_metrics():
+    """ Loads and returns the metrics for evaluating our model
+
+    Returns:
+        bleu, rouge and meteor metrics in that order
+    """
+
+    bleu = evaluate.load("bleu")
+    rouge = evaluate.load("rouge")
+    meteor = evaluate.load("meteor")
+    cer = evaluate.load("cer")
+    #nist_mt = evaluate.load("nist_mt")
+    chrf = evaluate.load("chrf")
+
+    return bleu, rouge, meteor, cer, chrf 
+
+
+def metrics(model, data, bleu, rouge, meteor, cer, chrf, vectorization):
     """ Generates the metrics data to be read with other functions
     based on the data given
     
     Args: 
-        Caption model, data and the bleu, rouge and meteor metrics
+        Caption model : the transformer model
+        data : a dictionary with file path as keys and a list with the caption as value. 
+        bleu : the bleu metric
+        rouge :  the rouge metric
+        meteor : the meteor metric
+        cer : the cer metric
+        chrf : the chrf metric
+        vectorization : TextVectorization object, obtained from get_vectorization()
     Returns:
         A dictionary with as keys the metrics name and as value a 
         list of results for each image in the data
@@ -86,7 +111,7 @@ def metrics(model, data, bleu, rouge, meteor):
     valid_images = list(data.keys())
 
     # Create somewhere to store the metrics
-    metrics_data = {"BLEU-1" : [], "BLEU-2" : [], "ROUGE-L" : [], "METEOR" : []}
+    metrics_data = {"BLEU-1" : [], "BLEU-2" : [], "ROUGE-L" : [], "METEOR" : [], "CER" : [], "CHRF" : []}
     ref, pred = [], []
 
     # For each image in the data provided
@@ -104,17 +129,17 @@ def metrics(model, data, bleu, rouge, meteor):
 
         # Pass the image to the CNN
         img = tf.expand_dims(sample_img, 0)
-        img = caption_model.cnn_model(img)
+        img = model.cnn_model(img)
 
         # Pass the image features to the Transformer encoder
-        encoded_img = caption_model.encoder(img, training=False)
+        encoded_img = model.encoder(img, training=False)
 
         # Generate the caption using the Transformer decoder
         decoded_caption = "<start> "
         for i in range(max_decoded_sentence_length):
             tokenized_caption = vectorization([decoded_caption])[:, :-1]
             mask = tf.math.not_equal(tokenized_caption, 0)
-            predictions = caption_model.decoder(
+            predictions = model.decoder(
                 tokenized_caption, encoded_img, training=False, mask=mask
             )
             sampled_token_index = np.argmax(predictions[0, i, :])
@@ -128,15 +153,20 @@ def metrics(model, data, bleu, rouge, meteor):
 
         # Store references and predictions for later 
         ref, pred = [[gt_caption]], [decoded_caption]
-
+        
         # Transform data and make predictions
         metrics_data["BLEU-1"].append(bleu.compute(predictions=pred, references=ref, max_order=1)["bleu"])
         metrics_data["BLEU-2"].append(bleu.compute(predictions=pred, references=ref, max_order=2)["bleu"])
         metrics_data["ROUGE-L"].append(rouge.compute(predictions=pred, references=ref)["rougeL"])
         metrics_data["METEOR"].append(meteor.compute(predictions=pred, references=ref)["meteor"])
+        metrics_data["CER"].append(cer.compute(predictions=pred, references=ref[0]))
+        #metrics_data["NIST-MT"].append(nist_mt.compute(predictions=pred, references=ref[0])["nist_mt"])
+        metrics_data["CHRF"].append(chrf.compute(predictions=pred, references=ref)["score"])
 
     # Return after all calculations
     return metrics_data
+
+
 
 def read_metrics(metrics_data):
     """ Prints statsitics of the metrics_data
