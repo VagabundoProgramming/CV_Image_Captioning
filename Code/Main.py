@@ -35,13 +35,15 @@ FF_DIM = 512
 
 # Other training parameters
 BATCH_SIZE = 64
-EPOCHS = 2
+EPOCHS = 1
 AUTOTUNE = tf.data.AUTOTUNE
 
 training = True
 
 
     ### Load Data ###
+print("Preprocessing and loading data")
+
 # Load the dataset
 captions_mapping, text_data = load_captions_data("Food Ingredients and Recipe Dataset with Image Name Mapping.csv")
 
@@ -62,8 +64,8 @@ test_dataset = make_dataset(list(test_data.keys()), list(test_data.values()), ve
 valid_dataset = make_dataset(list(valid_data.keys()), list(valid_data.values()), vectorization)
 
 
-
     ### Create the model ###
+print("Creating the model")
 
 cnn_model = get_cnn_model()
 encoder = TransformerEncoderBlock(embed_dim=EMBED_DIM, dense_dim=FF_DIM, num_heads=1)
@@ -92,17 +94,29 @@ lr_schedule = LRSchedule(post_warmup_learning_rate=1e-4, warmup_steps=num_warmup
 # Compile the model
 caption_model.compile(optimizer=keras.optimizers.Adam(lr_schedule), loss=cross_entropy)
 
+# Start some values into the model
+print("Starting the model")
+mini_dataset = make_dataset(list(train_data.keys())[0 : 1], list(train_data.values())[0 : 1], vectorization)
+
+caption_model.fit(
+    mini_dataset,
+    epochs=1,
+    validation_data=mini_dataset
+)
+
 # Fit the model
 if training:
     caption_model.fit(
         train_dataset,
         epochs=EPOCHS,
-        validation_data=valid_dataset,
+        validation_data=train_dataset,
         callbacks=[early_stopping],
     )
+
+    save_model(caption_model, "saved_models/custom_model.ob")
 
 else:
     load_model(caption_model, "saved_models/caption_model_34.ob")
 
-for x in range(0,3,1):
+for x in range(3):
     display_random_caption(caption_model, valid_dataset, vectorization)
