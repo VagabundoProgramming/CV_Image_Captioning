@@ -36,7 +36,7 @@ def load_captions_data(filename):
 
         caption_mapping = {}
         text_data = []
-        images_to_skip = set()
+        images_to_skip = []
         reader = csv.reader(csvfile)
         next(reader)  # Skip the header row
 
@@ -51,15 +51,17 @@ def load_captions_data(filename):
             # Tokenize caption and apply length constraints
             tokens = caption.split()
             if len(tokens) < MIN_SEQ_LENGTH or len(tokens) > MAX_SEQ_LENGTH:
-                images_to_skip.add(img_name)
+                images_to_skip.append(img_name)
                 continue
-            images_to_skip.add("pan-seared-salmon-on-baby-arugula-242445.jpg")
-            # Add start and end tokens to the caption
+            if img_name == "archive\\Food Images\\Food Images\\#NAME?.jpg":
+                images_to_skip.append(img_name)
+            #images_to_skip.add("pan-seared-salmon-on-baby-arugula-242445.jpg")
             
-
+            # Add start and end tokens to the caption
             if img_name.endswith("jpg") and img_name not in images_to_skip:
                 caption = f"<start> {caption} <end>"
                 text_data.append(caption)
+                
                 if img_name in caption_mapping:
                     #caption_mapping[img_name].append(caption)
                     pass
@@ -71,6 +73,7 @@ def load_captions_data(filename):
     for img_name in images_to_skip:
         if img_name in caption_mapping:
             del caption_mapping[img_name]
+            #captions_mapping.remove(img_name)
 
     return caption_mapping, text_data
 
