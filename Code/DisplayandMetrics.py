@@ -11,12 +11,64 @@ from CaptionModel import decode_and_resize
 
 ### Displaying random images with their captions
 
+def display_caption(model, filename, vectorization):
+    """ Display captions given a model and a filepath to an image
+    Args: 
+        model : the model which we base our predictions on
+        filename : a string leading to an image
+        vectorization : TextVectorization object, obtained from get_vectorization()
+    Returns:
+        a dictionary with keys reference and prediction with the corresponding strings
+    """
+
+    # Load relevant data
+    vocab = vectorization.get_vocabulary()
+    index_lookup = dict(zip(range(len(vocab)), vocab))
+    max_decoded_sentence_length = MAX_SEQ_LENGTH - 1
+
+    # Read the image from the disk
+    sample_img = decode_and_resize(filename)
+    img = sample_img.numpy().clip(0, 255).astype(np.uint8)
+
+    # Pass the image to the CNN
+    img2 = tf.expand_dims(sample_img, 0)
+    cnn_img = model.cnn_model(img2)
+
+    # Pass the image features to the Transformer encoder
+    encoded_img = model.encoder(cnn_img, training=False)
+
+    # Generate the caption using the Transformer decoder
+    decoded_caption = "<start> "
+    for i in range(max_decoded_sentence_length):
+        tokenized_caption = vectorization([decoded_caption])[:, :-1]
+        mask = tf.math.not_equal(tokenized_caption, 0)
+        predictions = model.decoder(
+            tokenized_caption, encoded_img, training=False, mask=mask
+        )
+        sampled_token_index = np.argmax(predictions[0, i, :])
+        sampled_token = index_lookup[sampled_token_index]
+        if sampled_token == "<end>":
+            break
+        decoded_caption += " " + sampled_token
+
+    decoded_caption = decoded_caption.replace("<start> ", "")
+    decoded_caption = decoded_caption.replace(" <end>", "").strip()
+
+    # Display
+    plt.imshow(img)
+    plt.axis('off')
+    plt.title(f"Predicted Caption: {decoded_caption}")
+    plt.show()
+    
+    return {"Prediction" : decoded_caption}
+
 def display_random_caption(model, data, vectorization):
     """ Display captions given a model and a random image from the data.
     Args: 
         model : the model which we base our predictions on
         data : a dictionary containing as keys the path to images and
                as values lists containing the captions as one string
+        vectorization : TextVectorization object, obtained from get_vectorization()
     Returns:
         a dictionary with keys reference and prediction with the corresponding strings
     """
@@ -71,6 +123,9 @@ def display_random_caption(model, data, vectorization):
     plt.show()
     
     return {"Prediction" : decoded_caption, "Reference" : gt_caption}
+
+
+
 
 
 ### Metrics ###
