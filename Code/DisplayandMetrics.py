@@ -17,6 +17,8 @@ def display_random_caption(model, data, vectorization):
         model : the model which we base our predictions on
         data : a dictionary containing as keys the path to images and
                as values lists containing the captions as one string
+    Returns:
+        a dictionary with keys reference and prediction with the corresponding strings
     """
 
     # Load relevant data
@@ -37,15 +39,13 @@ def display_random_caption(model, data, vectorization):
     # Read the image from the disk
     sample_img = decode_and_resize(sample_img)
     img = sample_img.numpy().clip(0, 255).astype(np.uint8)
-    plt.imshow(img)
-    plt.show()
 
     # Pass the image to the CNN
-    img = tf.expand_dims(sample_img, 0)
-    img = model.cnn_model(img)
+    img2 = tf.expand_dims(sample_img, 0)
+    cnn_img = model.cnn_model(img2)
 
     # Pass the image features to the Transformer encoder
-    encoded_img = model.encoder(img, training=False)
+    encoded_img = model.encoder(cnn_img, training=False)
 
     # Generate the caption using the Transformer decoder
     decoded_caption = "<start> "
@@ -63,8 +63,14 @@ def display_random_caption(model, data, vectorization):
 
     decoded_caption = decoded_caption.replace("<start> ", "")
     decoded_caption = decoded_caption.replace(" <end>", "").strip()
-    print(f"Predicted Caption: {decoded_caption}", )
-    print(f"Original Caption: {gt_caption}")
+
+    # Display
+    plt.imshow(img)
+    plt.axis('off')
+    plt.title(f"Predicted Caption: {decoded_caption}\nOriginal Caption: {gt_caption}")
+    plt.show()
+    
+    return {"Prediction" : decoded_caption, "Reference" : gt_caption}
 
 
 ### Metrics ###
@@ -73,7 +79,7 @@ def load_metrics():
     """ Loads and returns the metrics for evaluating our model
 
     Returns:
-        bleu, rouge and meteor metrics in that order
+        bleu, rouge, meteor, cer and chrf metrics, in that order
     """
 
     bleu = evaluate.load("bleu")
