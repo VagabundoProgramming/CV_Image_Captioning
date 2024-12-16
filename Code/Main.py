@@ -38,11 +38,15 @@ BATCH_SIZE = 64
 EPOCHS = 1
 AUTOTUNE = tf.data.AUTOTUNE
 
-training = True
+training = False
 
 
     ### Load Data ###
-print("Preprocessing and loading data")
+print("Preparing Data")
+
+
+# Clean dataset
+clean_dataset("archive/Food Ingredients and Recipe Dataset with Image Name Mapping.csv")
 
 # Load the dataset
 captions_mapping, text_data = load_captions_data("Food Ingredients and Recipe Dataset with Image Name Mapping.csv")
@@ -119,4 +123,4 @@ else:
     load_model(caption_model, "saved_models/caption_model_34.ob")
 
 for x in range(3):
-    display_random_caption(caption_model, valid_dataset, vectorization)
+    display_random_caption(caption_model, valid_data, vectorization)
