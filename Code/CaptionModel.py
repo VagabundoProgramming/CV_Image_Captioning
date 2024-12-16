@@ -10,6 +10,7 @@ from keras.layers import TextVectorization
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import pandas as pd
 import pickle
 import re
 import tensorflow as tf
@@ -18,6 +19,18 @@ os.environ["KERAS_BACKEND"] = "tensorflow"
 
 
 ### Data Loading ###
+
+def clean_dataset(filename):
+    """ Removes data from the dataset that we have foudn to be troubling or error prone
+
+    Args: 
+        filename : a string containing the path to the csv containing the data
+    """
+
+    dataframe = pd.read_csv(filename)
+    dataframe = dataframe[dataframe.Image_Name != "#NAME?"]
+    dataframe = dataframe[dataframe.Image_Name != "pan-seared-salmon-on-baby-arugula-242445"]
+    dataframe.to_csv(filename, index = False)
 
 def load_captions_data(filename):
     """Loads captions (text) data and maps them to corresponding images.
@@ -73,7 +86,7 @@ def load_captions_data(filename):
     for img_name in images_to_skip:
         if img_name in caption_mapping:
             del caption_mapping[img_name]
-            #captions_mapping.remove(img_name)
+            caption_mapping.remove(img_name)
 
     return caption_mapping, text_data
 
