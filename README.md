@@ -46,4 +46,4 @@ Metric at character level based on substitution, delation and insertion.
 bla bla bla
 
 ## Other methods (trained embeddings)
-We tried with models that involves trained embeddings and 
+We tried with models that involves trained embeddings that does not provide better results, they are also in this github and are two models that uses CNN and Inception_v3 respectevly and a GRU as decoder
