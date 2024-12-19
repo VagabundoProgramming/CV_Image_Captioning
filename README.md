@@ -21,12 +21,12 @@ due to limitations.
 The main model works with the join of a CNN and two Transformes working as encoder and decoder, the map feature given by the CNN and input of the Transformer encoder is (añadir valores) and the parameter given by both transformers are able to change but with the trained models we got that the output embedding from the Transformer encoder is as embedding dimensions of 512 and in the feed-forward network dimension of 512 and the output of the Transformer decoder are one-hot vectors of size of the vocabulary (añadir tamaño vocabulario - no me acuerdo).
 
 In our best model we could get:
-BLEU-1 - 0.23
-BLEU-2 - 0.18
-ROUGE-L - 0.28
-METEOR - 0.24
-CER - 0.76
-CHR_F - 0.28
+BLEU-1  -   0.23
+BLEU-2   -   0.18
+ROUGE-L   -   0.28
+METEOR   -   0.24
+CER   -   0.76
+CHR_F   -   0.28
 
 ## Metrics definitions
 
