@@ -18,7 +18,6 @@ seq_length = 10 # desired length of the predicted phrase
 tokenizer = RegexpTokenizer(r'\w+') # personalized tokenizer to only grab word (extracts punctuations)
 #----------------------------------------------------------
 
-
 assert torch.cuda.is_available(), "GPU is not enabled"
 
 #  use gpu if available
