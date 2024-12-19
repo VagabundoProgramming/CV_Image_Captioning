@@ -1,5 +1,4 @@
 # Image Captioning
-# Medical-Imaging
 This is a project from the Computer Vision class at UAB University.
 
 ## Task Description
