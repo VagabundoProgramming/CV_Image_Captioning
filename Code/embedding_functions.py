@@ -7,6 +7,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from torch.utils.data import Dataset
+from torchvision.models import Inception3
 
 import nltk
 from gensim.models import Word2Vec
@@ -17,6 +18,7 @@ from nltk.tokenize import RegexpTokenizer
 seq_length = 10 # desired length of the predicted phrase
 tokenizer = RegexpTokenizer(r'\w+') # personalized tokenizer to only grab word (extracts punctuations)
 #----------------------------------------------------------
+
 
 assert torch.cuda.is_available(), "GPU is not enabled"
 
@@ -51,7 +53,7 @@ def create_embedding(dataset, vector_size=50, window=3, min_count=1, sg=1, worke
     embedding.wv.add_vector("<unk>", np.full(50, 0.0000001, dtype="float32")) # Due to divisions by zero we replace the absolute 0 to a almost near to 0
     return embedding
 
-def train(model, loader, optimizer, criterion, epoch):
+def train(model, loader, optimizer, criterion, epoch, epochs):
     loss = 0
     model.train()
 
@@ -83,7 +85,7 @@ def train(model, loader, optimizer, criterion, epoch):
     loss = loss / len(loader)
     print("epoch : {}/{}, Train loss = {:.6f}".format(epoch + 1, epochs, loss))
 
-def test(model, loader, criterion, epoch):
+def test(model, loader, criterion, epoch, epochs):
     loss = 0
     model.eval()
     
@@ -135,9 +137,10 @@ class Image_Captioning(Dataset):
         img = np.transpose(img, (2, 1, 0)) / 255
         return torch.from_numpy(img).to(dtype=torch.float), self.captions[key]
 
-class CNN_GRU(nn.Module):
-    def __init__(self, embedding_size):
-        super(CNN_GRU, self).__init__()
+class CCN_GRU(nn.Module):
+    def __init__(self, embedding_size, seq_length=10):
+        super(Model, self).__init__()
+        self.seq_length = seq_length
         self.embedding_size = embedding_size
         # encoder
         self.encoder = nn.Sequential(
@@ -158,14 +161,49 @@ class CNN_GRU(nn.Module):
             nn.ReLU()
         )
         # decoder
-        self.gru = nn.GRU(1024, 1024, num_layers=1)
+        self.gru = nn.GRU(2048, 2048, num_layers=1)
         self.relu = nn.ReLU()
-        self.linear = nn.Linear(seq_length*1024, seq_length*embedding_size)
+        self.linear = nn.Linear(seq_length*2048, seq_length*embedding_size)
         self.tanh = nn.Tanh()
     
     def forward(self, x):
         # encoder
         x = self.encoder(x)
+        # decoder
+        word = []
+        hidden = None
+        for i in range(self.seq_length):
+            x, hidden = self.gru(x, hidden)
+            word.append(x)
+        x = torch.stack(word, 1)
+        x = self.relu(x)
+        x = torch.reshape(x, (-1, 20480))
+        x = self.linear(x)
+        x = self.tanh(x)
+        x = torch.reshape(x, (-1, self.seq_length, self.embedding_size))
+        return x
+
+class Inception_GRU(nn.Module):
+    def __init__(self, embedding_size=50):
+        super(Inception_GRU, self).__init__()
+        self.embedding_size = embedding_size
+        #  encoder
+        # 15 section has a unnecesary module (InceptionAux)
+        inception = Inception3()
+        self.inception = nn.Sequential(*[list(inception.children())[i] for i in range(21) if i != 15])
+        for i, section in enumerate(self.inception):
+            if i < 10:
+                for param in section.parameters():
+                    param.requires_grad = False
+        # decoder
+        self.gru = nn.GRU(2048, 2048, num_layers=1)
+        self.relu = nn.ReLU()
+        self.linear = nn.Linear(seq_length*2048, seq_length*embedding_size)
+        self.tanh = nn.Tanh()
+    
+    def forward(self, x):
+        x = self.inception(x)
+        x = torch.squeeze(x)
         # decoder
         word = []
         hidden = None
@@ -175,7 +213,7 @@ class CNN_GRU(nn.Module):
             word.append(x)
         x = torch.stack(word, 1)
         x = self.relu(x)
-        x = torch.reshape(x, (-1, 10240)) # resize to a linear function (to operate over all words)
+        x = torch.reshape(x, (-1, 20480)) # resize to a linear function (to operate over all words)
         x = self.linear(x)
         x = self.tanh(x)
         x = torch.reshape(x, (-1, seq_length, self.embedding_size)) # resize to the expected output (batch_size, seq_length, embedding_size)
