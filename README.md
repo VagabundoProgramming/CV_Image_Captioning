@@ -24,7 +24,15 @@ Accuracy section
 
 ## Metrics definitions
 
-### sdfkdsf
+### BLEU
+
+### ROUGE-L
+
+### METEOR
+
+### CER
+
+### CHR_F
 
 ## Other methods
 we tried different methods
