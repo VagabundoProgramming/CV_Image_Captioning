@@ -46,4 +46,7 @@ Metric at character level based on substitution, delation and insertion.
 bla bla bla
 
 ## Other methods (trained embeddings)
-We tried with models that involves trained embeddings that does not provide better results, they are also in this github and are two models that uses CNN and Inception_v3 respectevly and a GRU as decoder
+We tried with models that involves trained embeddings that does not provide better results, they are also in this github and are two models that uses CNN and Inception_v3 (pretrained model) respectevly as encoders and a GRU as decoder in both models.
+This models where tried with two different embeddings, Word2Vec as a simple word embedding and FastText based in syllables, this last designed for small corpus training since the corpus are the captions around 10 words each (the remaining spaces were added as "<pad>").
+
+We have not provided that much models from this section since does not provide any substancial change, only the Inception model with a Word2Vec embedding.
