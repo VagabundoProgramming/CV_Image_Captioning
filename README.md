@@ -14,7 +14,7 @@ accuracy and to load data.
 Inside the Models directory we have some models we have made so you can 
 try them yourself without having to train yourself.
 
-Unfortunately we do not provide the QUIRON dataset used for this project 
+Unfortunately we do not provide the Food dataset used for this project 
 due to limitations.
 
 ## Main Model
