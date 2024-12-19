@@ -22,8 +22,9 @@ The main model works with the join of a CNN and two Transformes working as encod
 
 In our best model we could get:
 
-  BLEU-1 --> 0.23
-  BLEU-2 --> 0.18
+BLEU-1 --> 0.23
+
+BLEU-2 --> 0.18
 
 ROUGE-L --> 0.28
 
