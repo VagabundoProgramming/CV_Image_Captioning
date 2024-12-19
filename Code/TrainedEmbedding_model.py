@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
 
-from my_funcs import *
+from TrainedEmeddingsFunctions import *
 
 import nltk
 import gensim
