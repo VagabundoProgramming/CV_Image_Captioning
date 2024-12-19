@@ -25,14 +25,19 @@ Accuracy section
 ## Metrics definitions
 
 #### BLEU
+Accuracy based on n-grams, in our case we use BLEU-1 (1-grams) and BLEU-2 (2-grams)
 
 #### ROUGE-L
+Measure subsequence of bla bla bla
 
 #### METEOR
 
+
 #### CER
+Metric based at character level based on substitution, delation and insertion
 
 #### CHR_F
+bla bla bla
 
 ## Other methods
 we tried different methods
