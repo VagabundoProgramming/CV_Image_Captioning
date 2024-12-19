@@ -18,26 +18,32 @@ Unfortunately we do not provide the Food dataset used for this project
 due to limitations.
 
 ## Main Model
-The main model works with the join of a CNN and two Transformes working as encoder and decoder, the map feature given by the CNN and input of the Transformer encoder is (añadir valores) and the parameter given by both transformers are able to change but with the trained models we got that the output embedding from the Transformer encoder is as embedding dimensions of 512 and in the feed-forward network dimension of 512 and the output of the Transformer decoder are one-hot vectors of size of the vocabulary (añadir tamaño vocabulario - no me acuerdo)
+The main model works with the join of a CNN and two Transformes working as encoder and decoder, the map feature given by the CNN and input of the Transformer encoder is (añadir valores) and the parameter given by both transformers are able to change but with the trained models we got that the output embedding from the Transformer encoder is as embedding dimensions of 512 and in the feed-forward network dimension of 512 and the output of the Transformer decoder are one-hot vectors of size of the vocabulary (añadir tamaño vocabulario - no me acuerdo).
 
-Accuracy section
+In our best model we could get:
+BLEU-1 - 0.23
+BLEU-2 - 0.18
+ROUGE-L - 0.28
+METEOR - 0.24
+CER - 0.76
+CHR_F - 0.28
 
 ## Metrics definitions
 
 #### BLEU
-Accuracy based on n-grams, in our case we use BLEU-1 (1-grams) and BLEU-2 (2-grams)
+Accuracy based on n-grams, in our case we use BLEU-1 (unigrams) and BLEU-2 (bigrams).
 
-#### ROUGE-L
-Measure subsequence of bla bla bla
+#### ROUGE
+Measure the longest subsequence of words (sequences in order but not necessarily conecutively), in our case we use ROUGE-L that takes recall in count too.
 
 #### METEOR
-
+Measures the amount of candidates of unigrams and its reference related to the predicted (kind of a wordle).
 
 #### CER
-Metric based at character level based on substitution, delation and insertion
+Metric at character level based on substitution, delation and insertion.
 
 #### CHR_F
 bla bla bla
 
-## Other methods
-we tried different methods
+## Other methods (trained embeddings)
+We tried with models that involves trained embeddings and 
