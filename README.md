@@ -17,6 +17,9 @@ try them yourself without having to train yourself.
 Unfortunately we do not provide the Food dataset used for this project 
 due to limitations.
 
+The pre-trained models that were to huge to upload them on the github were saved in the following Google Drive:
+https://drive.google.com/file/d/1GxtEWpmNYuSnPHS0u3k_JDwPYfjcFdlg/view?usp=sharing
+
 ## Main Model
 The main model works with the join of a CNN and two Transformes working as encoder and decoder, the map feature given by the CNN and input of the Transformer encoder is (añadir valores) and the parameter given by both transformers are able to change but with the trained models we got that the output embedding from the Transformer encoder is as embedding dimensions of 512 and in the feed-forward network dimension of 512 and the output of the Transformer decoder are one-hot vectors of size of the vocabulary (añadir tamaño vocabulario - no me acuerdo).
 
