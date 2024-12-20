@@ -21,7 +21,7 @@ The pre-trained models that were to huge to upload them on the github were saved
 [Model Weights](https://drive.google.com/drive/folders/1E1UoIag4SuuFLReYkgQYg6dDXTd2HKtS?usp=sharing)
 
 ## Main Model
-The main model works with the join of a CNN and two Transformes working as encoder and decoder, the map feature given by the CNN and input of the Transformer encoder is (añadir valores) and the parameter given by both transformers are able to change but with the trained models we got that the output embedding from the Transformer encoder is as embedding dimensions of 512 and in the feed-forward network dimension of 512 and the output of the Transformer decoder are one-hot vectors of size of the vocabulary (añadir tamaño vocabulario - no me acuerdo).
+The main model works with the join of a CNN and two Transformes working as encoder and decoder, the map feature given by the CNN is the input of the Transformer encoder and the parameter given by both transformers are able to change but with the trained models we got that the output embedding from the Transformer encoder is as embedding dimensions of 512 and in the feed-forward network dimension of 512 and the output of the Transformer decoder are one-hot vectors of size of the vocabulary.
 
 In our best model we could get:
 
