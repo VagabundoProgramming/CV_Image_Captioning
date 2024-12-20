@@ -49,7 +49,7 @@ Measures the amount of candidates of unigrams and its reference related to the p
 Metric at character level based on substitution, delation and insertion.
 
 #### CHR_F
-bla bla bla
+Measures the F-score averaged on all characters and word n-grams.
 
 ## Other methods (trained embeddings)
 We tried with models that involves trained embeddings that does not provide better results, they are also in this github and are two models that uses CNN and Inception_v3 (pretrained model) respectevly as encoders and a GRU as decoder in both models.
